@@ -77,22 +77,37 @@ export const InteractionForm: React.FC<IInteractionForm> = ({ description, defau
         {inputs.map((IinputField, index) => (
           <div key={IinputField.name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
             <label htmlFor={IinputField.name}>{IinputField.description}</label>
-            <input
-              id={IinputField.name}
-              type="text"
-              value={IinputField.value}
-              onChange={(e) => {
-                const newInputs = [...inputs];
-                newInputs[index] = { ...IinputField, value: e.target.value };
-                setInputs(newInputs);
-                if (onInputsChange) {
-
-                  onInputsChange(newInputs); // Call the callback function with the new inputs
-
-                }
-              }}
-              placeholder={IinputField.description}
-            />
+            {functionName === 'submitData' ? (
+              <textarea
+                id={IinputField.name}
+                rows="10"
+                value={IinputField.value}
+                onChange={(e) => {
+                  const newInputs = [...inputs];
+                  newInputs[index] = { ...IinputField, value: e.target.value };
+                  setInputs(newInputs);
+                  if (onInputsChange) {
+                    onInputsChange(newInputs); // Call the callback function with the new inputs
+                  }
+                }}
+                placeholder={IinputField.description}
+              />
+            ) : (
+              <input
+                id={IinputField.name}
+                type="text"
+                value={IinputField.value}
+                onChange={(e) => {
+                  const newInputs = [...inputs];
+                  newInputs[index] = { ...IinputField, value: e.target.value };
+                  setInputs(newInputs);
+                  if (onInputsChange) {
+                    onInputsChange(newInputs); // Call the callback function with the new inputs
+                  }
+                }}
+                placeholder={IinputField.description}
+              />
+            )}
           </div>
         ))}
         <button type="submit" disabled={!primaryWallet} style={{ marginTop: 'auto' }}>{description}</button>
