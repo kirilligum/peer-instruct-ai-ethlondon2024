@@ -19,7 +19,8 @@ interface IInteractionForm {
 }
 
 export const InteractionForm: React.FC<IInteractionForm> = ({ description, defaultInputs, functionName, functionArgs, isReadCall, onInputsChange }) => {
-  const contractAddress = "0x29fAc56b5f34e29BC363cA18ACB33924f2Ce166c";
+  const contractAddress = "0x29fAc56b5f34e29BC363cA18ACB33924f2Ce166c"; // base sepolia
+  // const contractAddress = "0xb1fEC5fe2d82A189eE793aE9a675eA4a7caC6e99"; // arbitrum sepolia
   const { primaryWallet, network } = useDynamicContext();
 
   const [transactionHash, setTransactionHash] = useState<string>('');

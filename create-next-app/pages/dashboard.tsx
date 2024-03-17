@@ -13,6 +13,15 @@ import { LocalAccountSigner } from "@alchemy/aa-core";
 import { deepHexlify, resolveProperties } from "@alchemy/aa-core";
 import axios from "axios";
 import { http } from "viem";
+import { InteractionForm } from "../components/InteractionForm";
+
+import { useState } from 'react'
+
+interface IInputField {
+  name: string;
+  value: string;
+  description: string;
+}
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -160,24 +169,21 @@ export default function DashboardPage() {
     }
   }
 
+  const [activeTab, setActiveTab] = useState('owner');
+  const [showOnChainSection, setShowOnChainSection] = useState(false);
+  const [showAa, setShowAa] = useState(false);
 
   return (
     <>
       <Head>
-        <title>Privy Auth Demo</title>
+        <title>Peer Instruct AI</title>
       </Head>
 
       <main className="flex flex-col min-h-screen px-4 sm:px-20 py-6 sm:py-10 bg-privy-light-blue">
-        <div className="flex flex-row justify-between">
-          <button
-            className="text-sm bg-green-600 hover:bg-green-700 py-2 px-4 rounded-md text-white"
-            onClick={handleClick}
-          >Test</button>
-        </div>
         {ready && authenticated ? (
           <>
             <div className="flex flex-row justify-between">
-              <h1 className="text-2xl font-semibold">Privy Auth Demo</h1>
+              <h1 className="text-2xl font-semibold">Peer Instruct AI</h1>
               <button
                 onClick={logout}
                 className="text-sm bg-violet-200 hover:text-violet-900 py-2 px-4 rounded-md text-violet-700"
@@ -185,133 +191,331 @@ export default function DashboardPage() {
                 Logout
               </button>
             </div>
-            <div className="mt-12 flex gap-4 flex-wrap">
-              {googleSubject ? (
-                <button
-                  onClick={() => {
-                    unlinkGoogle(googleSubject);
-                  }}
-                  className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
-                  disabled={!canRemoveAccount}
-                >
-                  Unlink Google
-                </button>
-              ) : (
-                <button
-                  onClick={() => {
-                    linkGoogle();
-                  }}
-                  className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white"
-                >
-                  Link Google
-                </button>
-              )}
 
-              {twitterSubject ? (
-                <button
-                  onClick={() => {
-                    unlinkTwitter(twitterSubject);
-                  }}
-                  className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
-                  disabled={!canRemoveAccount}
-                >
-                  Unlink Twitter
-                </button>
-              ) : (
-                <button
-                  className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white"
-                  onClick={() => {
-                    linkTwitter();
-                  }}
-                >
-                  Link Twitter
-                </button>
-              )}
-
-              {discordSubject ? (
-                <button
-                  onClick={() => {
-                    unlinkDiscord(discordSubject);
-                  }}
-                  className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
-                  disabled={!canRemoveAccount}
-                >
-                  Unlink Discord
-                </button>
-              ) : (
-                <button
-                  className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white"
-                  onClick={() => {
-                    linkDiscord();
-                  }}
-                >
-                  Link Discord
-                </button>
-              )}
-
-              {email ? (
-                <button
-                  onClick={() => {
-                    unlinkEmail(email.address);
-                  }}
-                  className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
-                  disabled={!canRemoveAccount}
-                >
-                  Unlink email
-                </button>
-              ) : (
-                <button
-                  onClick={linkEmail}
-                  className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white"
-                >
-                  Connect email
-                </button>
-              )}
-              {wallet ? (
-                <button
-                  onClick={() => {
-                    unlinkWallet(wallet.address);
-                  }}
-                  className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
-                  disabled={!canRemoveAccount}
-                >
-                  Unlink wallet
-                </button>
-              ) : (
-                <button
-                  onClick={linkWallet}
-                  className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white border-none"
-                >
-                  Connect wallet
-                </button>
-              )}
-              {phone ? (
-                <button
-                  onClick={() => {
-                    unlinkPhone(phone.number);
-                  }}
-                  className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
-                  disabled={!canRemoveAccount}
-                >
-                  Unlink phone
-                </button>
-              ) : (
-                <button
-                  onClick={linkPhone}
-                  className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white border-none"
-                >
-                  Connect phone
-                </button>
-              )}
+            <div>
+              <button
+                className="text-sm bg-green-600 hover:bg-green-700 py-2 px-4 rounded-md text-white"
+                onClick={() => setActiveTab('owner')}>Owner</button>
+              <button
+                className="text-sm bg-green-600 hover:bg-green-700 py-2 px-4 rounded-md text-white"
+                onClick={() => setActiveTab('author')}>Author</button>
+              <button
+                className="text-sm bg-green-600 hover:bg-green-700 py-2 px-4 rounded-md text-white"
+                onClick={() => setActiveTab('reviewers')}>Reviewers</button>
             </div>
-
-            <p className="mt-6 font-bold uppercase text-sm text-gray-600">User object</p>
-            <textarea
-              value={JSON.stringify(user, null, 2)}
-              className="max-w-4xl bg-slate-700 text-slate-50 font-mono p-4 text-xs sm:text-sm rounded-md mt-2"
-              rows={20}
-              disabled
+            {activeTab === 'owner' && (
+              <>
+                <InteractionForm
+                  description="add author"
+                  defaultInputs={[{ name: "author", value: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", description: "author" }]}
+                  functionName="addAuthor"
+                  functionArgs={(inputs: IInputField[]) => {
+                    return [inputs[0].value];
+                  }}
+                />
+                <InteractionForm
+                  description="add reviewer"
+                  defaultInputs={[
+                    { name: "reviewer", value: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", description: "reviewer" },
+                    { name: "keywords", value: "dao", description: "keywords" }
+                  ]}
+                  functionName="addReviewer"
+                  functionArgs={(inputs: IInputField[]) => {
+                    return [inputs[0].value, inputs[1].value.split(',').map(keyword => keyword.trim())]
+                  }}
+                />
+              </>
+            )}
+            {activeTab === 'author' && (
+              <>
+                <InteractionForm
+                  description="Submit Data"
+                  defaultInputs={[{
+                    name: "data", value: '{\n  "task_definition": "Explain the concept of account abstraction in the context of blockchain technology.",\n              "is_positive_example": true,\n              "input": "What is account abstraction in blockchain?",\n              "response": "Account abstraction in blockchain refers to the idea of making smart contract accounts and externally owned accounts (EOAs) indistinguishable. This allows smart contracts to initiate transactions, pay fees, and perform actions like EOAs, enhancing flexibility, security, and user experience.",\n              "explanation": "The response concisely explains account abstraction, highlighting its key aspects and benefits. It mentions the distinction between smart contract accounts and EOAs, and how account abstraction removes this distinction. The response also notes the potential improvements in flexibility, security, and user experience."\n            }', description: "Data to submit"
+                  }]}
+                  functionName="submitData"
+                  functionArgs={(inputs: IInputField[]) => {
+                    return [inputs[0].value]
+                  }}
+                />
+                <InteractionForm
+                  description="Check if Submission is Approved"
+                  defaultInputs={[{ name: "submissionId", value: "0", description: "Submission ID" }]}
+                  functionName="getIsApproved"
+                  functionArgs={(inputs: IInputField[]) => {
+                    return [inputs[0].value]
+                  }}
+                  isReadCall={true}
+                />
+              </>
+            )}
+            {activeTab === 'reviewers' && (
+              <>
+                <InteractionForm
+                  description="Add Keyword to Reviewer"
+                  defaultInputs={[
+                    { name: "reviewerIndex", value: "0", description: "Reviewer Index" },
+                    { name: "newKeyword", value: "", description: "New Keyword" }
+                  ]}
+                  functionName="addKeywordToReviewer"
+                  functionArgs={(inputs: IInputField[]) => {
+                    return [inputs[0].value, inputs[1].value]
+                  }}
+                />
+                <InteractionForm
+                  description="Reviewer Vote"
+                  defaultInputs={[
+                    { name: "submissionId", value: "0", description: "Submission ID" },
+                    { name: "vote", value: "1", description: "Vote (1 for accept, 0 for reject)" }
+                  ]}
+                  functionName="reviewerVote"
+                  functionArgs={(inputs: IInputField[]) => {
+                    return [inputs[1].value, inputs[0].value]
+                  }}
+                />
+              </>
+            )}
+            <br />
+            <h3>Peer review steps</h3>
+            <p>anyone can do these steps</p>
+            <InteractionForm
+              description="Assign Random Seed"
+              defaultInputs={[{ name: "submissionId", value: "0", description: "Submission ID" }]}
+              functionName="assignRandomSeedToSubmission"
+              functionArgs={(inputs: IInputField[]) => {
+                return [inputs[0].value];
+              }}
             />
+            <InteractionForm
+              description="Shuffle Reviewers"
+              defaultInputs={[{ name: "submissionId", value: "0", description: "Submission ID" }]}
+              functionName="shuffleReviewers"
+              functionArgs={(inputs: IInputField[]) => {
+                return [inputs[0].value];
+              }}
+            />
+            <InteractionForm
+              description="Find Top Reviewers"
+              defaultInputs={[{ name: "submissionId", value: "0", description: "Submission ID" }]}
+              functionName="findTopReviewersForSubmission"
+              functionArgs={(inputs: IInputField[]) => {
+                return [inputs[0].value];
+              }}
+            />
+            <InteractionForm
+              description="Reveal Votes"
+              defaultInputs={[{ name: "submissionId", value: "0", description: "Submission ID" }]}
+              functionName="revealVotes"
+              functionArgs={(inputs: IInputField[]) => {
+                return [inputs[0].value];
+              }}
+            />
+
+            <br />
+
+            <button onClick={() => setShowOnChainSection(!showOnChainSection)}>
+              {showOnChainSection ? 'Hide On-Chain Section' : 'See What is On-Chain'}
+            </button>
+            {showOnChainSection && (
+              <>
+                <InteractionForm
+                  description="Get Reviewers"
+                  defaultInputs={[]}
+                  functionName="getReviewers"
+                  functionArgs={() => []}
+                  isReadCall={true}
+                />
+                <InteractionForm
+                  description="Get Reviewer Keywords"
+                  defaultInputs={[{ name: "reviewerAddress", value: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266", description: "Reviewer Address" }]}
+                  functionName="getReviewerKeywords"
+                  functionArgs={(inputs: IInputField[]) => {
+                    return [inputs[0].value];
+                  }}
+                  isReadCall={true}
+                />
+                <InteractionForm
+                  description="Get Submission"
+                  defaultInputs={[{ name: "submissionId", value: "0", description: "Submission ID" }]}
+                  functionName="getSubmission"
+                  functionArgs={(inputs: IInputField[]) => {
+                    return [inputs[0].value];
+                  }}
+                  //     author: result.author,
+                  //     data: result.data,
+                  //     selectedReviewers: result.selectedReviewers,
+                  //     shuffledReviewers: result.shuffledReviewers,
+                  //     isApproved: result.isApproved,
+                  //     seed: result.seed.toString(),
+                  //     countVotes: result.countVotes.toString()
+                  isReadCall={true}
+                />
+                <InteractionForm
+                  description="Get Shuffled Reviewers"
+                  defaultInputs={[{ name: "submissionId", value: "0", description: "Submission ID" }]}
+                  functionName="getShuffledReviewers"
+                  functionArgs={(inputs: IInputField[]) => {
+                    return [inputs[0].value];
+                  }}
+                  isReadCall={true}
+                />
+                <InteractionForm
+                  description="Get Selected Reviewers"
+                  defaultInputs={[{ name: "submissionId", value: "0", description: "Submission ID" }]}
+                  functionName="getSelectedReviewers"
+                  functionArgs={(inputs: IInputField[]) => {
+                    return [inputs[0].value];
+                  }}
+                  isReadCall={true}
+                />
+              </>
+            )}
+            <br />
+
+            <br />
+            Follow @kirill_igum
+
+            <button onClick={() => setShowAa(!showAa)}>
+              {showAa ? 'Hide Aa Section' : 'See Aa Section'}
+            </button>
+            {showAa && (
+              <>
+                <div className="flex flex-row justify-between">
+                  <button
+                    className="text-sm bg-green-600 hover:bg-green-700 py-2 px-4 rounded-md text-white"
+                    onClick={handleClick}
+                  >Test</button>
+                </div>
+
+                <div className="mt-12 flex gap-4 flex-wrap">
+                  {googleSubject ? (
+                    <button
+                      onClick={() => {
+                        unlinkGoogle(googleSubject);
+                      }}
+                      className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
+                      disabled={!canRemoveAccount}
+                    >
+                      Unlink Google
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        linkGoogle();
+                      }}
+                      className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white"
+                    >
+                      Link Google
+                    </button>
+                  )}
+
+                  {twitterSubject ? (
+                    <button
+                      onClick={() => {
+                        unlinkTwitter(twitterSubject);
+                      }}
+                      className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
+                      disabled={!canRemoveAccount}
+                    >
+                      Unlink Twitter
+                    </button>
+                  ) : (
+                    <button
+                      className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white"
+                      onClick={() => {
+                        linkTwitter();
+                      }}
+                    >
+                      Link Twitter
+                    </button>
+                  )}
+
+                  {discordSubject ? (
+                    <button
+                      onClick={() => {
+                        unlinkDiscord(discordSubject);
+                      }}
+                      className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
+                      disabled={!canRemoveAccount}
+                    >
+                      Unlink Discord
+                    </button>
+                  ) : (
+                    <button
+                      className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white"
+                      onClick={() => {
+                        linkDiscord();
+                      }}
+                    >
+                      Link Discord
+                    </button>
+                  )}
+
+                  {email ? (
+                    <button
+                      onClick={() => {
+                        unlinkEmail(email.address);
+                      }}
+                      className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
+                      disabled={!canRemoveAccount}
+                    >
+                      Unlink email
+                    </button>
+                  ) : (
+                    <button
+                      onClick={linkEmail}
+                      className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white"
+                    >
+                      Connect email
+                    </button>
+                  )}
+                  {wallet ? (
+                    <button
+                      onClick={() => {
+                        unlinkWallet(wallet.address);
+                      }}
+                      className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
+                      disabled={!canRemoveAccount}
+                    >
+                      Unlink wallet
+                    </button>
+                  ) : (
+                    <button
+                      onClick={linkWallet}
+                      className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white border-none"
+                    >
+                      Connect wallet
+                    </button>
+                  )}
+                  {phone ? (
+                    <button
+                      onClick={() => {
+                        unlinkPhone(phone.number);
+                      }}
+                      className="text-sm border border-violet-600 hover:border-violet-700 py-2 px-4 rounded-md text-violet-600 hover:text-violet-700 disabled:border-gray-500 disabled:text-gray-500 hover:disabled:text-gray-500"
+                      disabled={!canRemoveAccount}
+                    >
+                      Unlink phone
+                    </button>
+                  ) : (
+                    <button
+                      onClick={linkPhone}
+                      className="text-sm bg-violet-600 hover:bg-violet-700 py-2 px-4 rounded-md text-white border-none"
+                    >
+                      Connect phone
+                    </button>
+                  )}
+                </div>
+
+                <p className="mt-6 font-bold uppercase text-sm text-gray-600">User object</p>
+                <textarea
+                  value={JSON.stringify(user, null, 2)}
+                  className="max-w-4xl bg-slate-700 text-slate-50 font-mono p-4 text-xs sm:text-sm rounded-md mt-2"
+                  rows={20}
+                  disabled
+                />
+              </>
+            )}
           </>
         ) : null}
       </main>
