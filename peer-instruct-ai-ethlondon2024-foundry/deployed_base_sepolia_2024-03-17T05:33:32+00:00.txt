@@ -1,0 +1,8 @@
+kirill@SHAMAN ~/p/p/peer-instruct-ai-ethlondon2024-foundry (main)> forge create --rpc-url "https://api.developer.coinbase.com/rpc/v1/base-sepolia/0tt" --private-key "0x24bd" src/PeerReview.sol:PeerReview --constructor-args "odc-by" 100
+[⠒] Compiling...
+[⠊] Compiling 1 files with 0.8.24
+[⠒] Solc 0.8.24 finished in 1.83s
+Compiler run successful!
+Deployer: 0x5873298b68497fad590f68221D9a8d134902DE64
+Deployed to: 0x29fAc56b5f34e29BC363cA18ACB33924f2Ce166c
+Transaction hash: 0x5338efc0d57adabfe7fb0d81ec80f54f87dbeeb291f6a97cf84f1766c21f5e79
