@@ -80,7 +80,8 @@ export const InteractionForm: React.FC<IInteractionForm> = ({ description, defau
             {functionName === 'submitData' ? (
               <textarea
                 id={IinputField.name}
-                rows="10"
+                rows="20"
+                cols="80"
                 value={IinputField.value}
                 onChange={(e) => {
                   const newInputs = [...inputs];
