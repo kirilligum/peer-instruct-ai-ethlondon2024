@@ -67,7 +67,9 @@ function App() {
         <>
           <InteractionForm
             description="Submit Data"
-            defaultInputs={[{ name: "data", value: "write some really clever text in the form of instruction and response.", description: "Data to submit" }]}
+            defaultInputs={[{
+              name: "data", value: '{\n  "task_definition": "Explain the concept of account abstraction in the context of blockchain technology.",\n              "is_positive_example": true,\n              "input": "What is account abstraction in blockchain?",\n              "response": "Account abstraction in blockchain refers to the idea of making smart contract accounts and externally owned accounts (EOAs) indistinguishable. This allows smart contracts to initiate transactions, pay fees, and perform actions like EOAs, enhancing flexibility, security, and user experience.",\n              "explanation": "The response concisely explains account abstraction, highlighting its key aspects and benefits. It mentions the distinction between smart contract accounts and EOAs, and how account abstraction removes this distinction. The response also notes the potential improvements in flexibility, security, and user experience."\n            }', description: "Data to submit"
+            }]}
             functionName="submitData"
             functionArgs={(inputs: IInputField[]) => {
               return [inputs[0].value]
